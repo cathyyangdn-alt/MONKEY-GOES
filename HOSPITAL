@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Monkey Goes to Hospital - Full Book Reading Practice</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:#f7f9fc;
+            font-family:Arial,sans-serif;
+            padding:20px;
+            max-width:750px;
+            margin:0 auto;
+            overflow-x: hidden;
+        }
+        h1{
+            color:#2d7d9a;
+            text-align:center;
+            margin-bottom:20px;
+            font-size:24px;
+        }
+        .box{
+            background:#fff;
+            border-radius:16px;
+            padding:25px;
+            box-shadow:0 4px 12px #ddd;
+            position: relative;
+            overflow: hidden;
+            min-height: 520px;
+        }
+        .sentence-box{
+            font-size:24px;
+            line-height:1.9;
+            padding:25px 20px;
+            background:#f0f7ff;
+            border-radius:12px;
+            margin:15px 0;
+            min-height:120px;
+            text-align:center;
+            font-weight:500;
+        }
+        .correct{background:#e8f8e8;color:#239b56;}
+        .wrong{background:#fff0f0;color:#e74c3c;}
+        .btn{
+            display:block;
+            width:80%;
+            margin:12px auto;
+            padding:14px 28px;
+            font-size:18px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            color:#fff;
+            font-weight:bold;
+        }
+        .btn-listen{background:#3498db;}
+        .btn-record{background:#f39c12;}
+        .btn-next{background:#27ae60;}
+        .btn-restart{background:#9b59b6;}
+        .tip{
+            font-size:16px;
+            color:#666;
+            text-align:center;
+            margin:12px 0;
+            line-height:1.6;
+        }
+        .status{
+            font-size:20px;
+            font-weight:bold;
+            text-align:center;
+            margin:18px 0;
+            min-height:26px;
+        }
+        .progress{
+            text-align:center;
+            font-size:17px;
+            color:#555;
+            margin-bottom:12px;
+        }
+
+        .animate-item {
+            position: absolute;
+            font-size: 32px;
+            pointer-events: none;
+        }
+        .star {
+            color: #ffd700;
+            animation: starFall 2.2s linear forwards;
+        }
+        @keyframes starFall {
+            0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(320px) rotate(360deg); opacity: 0; }
+        }
+        .heart {
+            color: #ff477e;
+            animation: heartFloat 2.5s ease-out forwards;
+        }
+        @keyframes heartFloat {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            50% { transform: translateY(-80px) scale(1.2); }
+            100% { transform: translateY(-150px) scale(0.8); opacity: 0; }
+        }
+        .flower {
+            color: #9b59b6;
+            animation: flowerSpin 2.5s ease-out forwards;
+        }
+        @keyframes flowerSpin {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-180px) rotate(720deg); opacity: 0; }
+        }
+        .firework {
+            color: #ff9500;
+            animation: fireworkBurst 2s ease-out forwards;
+        }
+        @keyframes fireworkBurst {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .celebrate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+            font-weight: bold;
+            z-index: 999;
+            animation: fadeOut 3s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🐒 Monkey Goes to Hospital - Full Book Reading</h1>
+    <div class="box" id="mainBox">
+        <div class="progress" id="progress">Current Sentence: 1 / 42 | Finished: 0</div>
+        <div class="sentence-box" id="showSentence">
+            Click "Listen" to start reading
+        </div>
+        <div class="status" id="status"></div>
+
+        <button class="btn btn-listen" onclick="playVoice()">🔊 Listen</button>
+        <button class="btn btn-record" onclick="startRecord()">🎤 Read Aloud</button>
+        <button class="btn btn-next" onclick="nextSentence()">➡️ Next</button>
+        <button class="btn btn-restart" onclick="restartAll()">🔄 Restart</button>
+
+        <p class="tip">How to play: Listen first → Read aloud → Enjoy fun rewards!</p>
+    </div>
+
+<script>
+const storySentences = [
+    "Monkey was very excited!",
+    "Lion and Giraffe had come to play.",
+    "Dad said they could play outside.",
+    "Monkey asked if they could climb the big tree.",
+    "Dad said yes, but they had to be careful!",
+    "He said they had to hold on tight and be sensible!",
+    "Monkey got to the tree first.",
+    "He climbed really high.",
+    "Lion and Giraffe told him to be careful.",
+    "They told him to hold on tight.",
+    "But Monkey didn't listen.",
+    "He started to show off.",
+    "Lion and Giraffe told Monkey to stop being silly.",
+    "They said he would fall if he didn't hold on tight.",
+    "But Monkey didn't listen.",
+    "He showed off even more!",
+    "He forgot to hold on tight.",
+    "He fell down with a loud thump!",
+    "Lion and Giraffe ran to help him.",
+    "Monkey was upset.",
+    "He felt very dizzy.",
+    "His leg hurt too.",
+    "Lion and Giraffe were worried.",
+    "Giraffe ran to get Dad.",
+    "Dad said he had better take Monkey to hospital for a check-up.",
+    "But Monkey didn't want to go to hospital.",
+    "He didn't want a check-up at all.",
+    "He said hospitals were scary!",
+    "Then Lion told Monkey that he hurt his head once at his granny's house.",
+    "He said he had to go to hospital.",
+    "He felt scared.",
+    "But his granny said hospitals were good places.",
+    "She said the doctors and nurses were kind and would help him.",
+    "Lion said he was scared when they put a big bandage on his head.",
+    "But he thought of nice things to take his mind off it.",
+    "He said that helped a lot!",
+    "The doctor said he was a very brave lion.",
+    "Lion said he felt proud.",
+    "Monkey had a think.",
+    "He wanted to be brave like Lion.",
+    "He said he could think of nice things to take his mind off it.",
+    "Dad said that was a good idea.",
+    "At the hospital, a nurse took Monkey's temperature.",
+    "The nurse said his temperature was very good.",
+    "Monkey was pleased.",
+    "Next, a doctor looked in his eyes.",
+    "She felt his head and his leg, too.",
+    "Then the doctor said Monkey needed an X-ray.",
+    "She said an X-ray was like having a picture taken.",
+    "Monkey didn't want an X-ray.",
+    "He said an X-ray sounded scary.",
+    "Then he remembered what Lion said.",
+    "He thought about lots of nice things.",
+    "Soon the X-ray was done ... and it didn't hurt at all.",
+    "The doctor said Monkey was very brave.",
+    "Monkey was proud.",
+    "The doctor told Monkey that he had sprained his leg.",
+    "She said she would put a bandage on it to help it better.",
+    "She said he would have to rest his leg for a few days.",
+    "Monkey was pleased with his bandage.",
+    "Best of all, the doctor gave him a sticker.",
+    "Monkey showed Lion and Giraffe his bandage and his sticker.",
+    "Monkey said he hoped he could climb the tree again soon.",
+    "But next time, he promised to hold on and not show off.",
+    "Everyone said that was a very good idea."
+];
+
+let currentIndex = 0;
+let finishedCount = 0;
+const synth = window.speechSynthesis;
+let recognition;
+const showSentence = document.getElementById("showSentence");
+const statusText = document.getElementById("status");
+const progressText = document.getElementById("progress");
+const mainBox = document.getElementById("mainBox");
+
+function initPage(){
+    currentIndex = 0;
+    finishedCount = 0;
+    showCurrentSentence();
+}
+
+function showCurrentSentence(){
+    showSentence.innerText = storySentences[currentIndex];
+    showSentence.className = "sentence-box";
+    statusText.innerText = "";
+    progressText.innerText = `Current Sentence: ${currentIndex+1} / ${storySentences.length} | Finished: ${finishedCount}`;
+}
+
+// 语速固定0.4 超慢速
+function playVoice(){
+    let text = storySentences[currentIndex];
+    let utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "en-US";
+    utter.rate = 0.4;
+    synth.speak(utter);
+    statusText.innerText = "Listen carefully to the standard reading.";
+    statusText.style.color = "#3498db";
+}
+
+function createStarReward(){
+    for(let i = 0; i < 5; i++){
+        let star = document.createElement("div");
+        star.className = "animate-item star";
+        star.innerText = "★";
+        let leftPos = 10 + Math.random() * 80;
+        star.style.left = leftPos + "%";
+        star.style.top = "10px";
+        mainBox.appendChild(star);
+        setTimeout(()=>{ star.remove(); }, 2200);
+    }
+}
+
+function createLevelReward(){
+    if(finishedCount === 10){
+        for(let i = 0; i < 3; i++){
+            let heart = document.createElement("div");
+            heart.className = "animate-item heart";
+            heart.innerText = "♥";
+            heart.style.left = (15 + i * 25) + "%";
+            heart.style.top = "120px";
+            mainBox.appendChild(heart);
+            setTimeout(()=>{ heart.remove(); }, 2500);
+        }
+    }
+    if(finishedCount === 20){
+        for(let i = 0; i < 3; i++){
+            let flower = document.createElement("div");
+            flower.className = "animate-item flower";
+            flower.innerText = "✿";
+            flower.style.left = (15 + i * 25) + "%";
+            flower.style.top = "120px";
+            mainBox.appendChild(flower);
+            setTimeout(()=>{ flower.remove(); }, 2500);
+        }
+    }
+    if(finishedCount === 30){
+        for(let i = 0; i < 4; i++){
+            let firework = document.createElement("div");
+            firework.className = "animate-item firework";
+            firework.innerText = "✦";
+            firework.style.left = (10 + i * 22) + "%";
+            firework.style.top = "120px";
+            mainBox.appendChild(firework);
+            setTimeout(()=>{ firework.remove(); }, 2000);
+        }
+    }
+    if(finishedCount === storySentences.length){
+        let celebrate = document.createElement("div");
+        celebrate.className = "celebrate";
+        celebrate.innerText = "🎉 You finished the whole book! Great Job! 🎉";
+        document.body.appendChild(celebrate);
+        setTimeout(()=>{ celebrate.remove(); }, 3000);
+    }
+}
+
+function startRecord(){
+    if(!window.webkitSpeechRecognition && !window.SpeechRecognition){
+        statusText.innerText = "Your browser does not support voice recognition. Please use Chrome or Edge.";
+        statusText.style.color = "#e74c3c";
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    statusText.innerText = "🎤 Please read the sentence loudly!";
+    statusText.style.color = "#f39c12";
+    recognition.start();
+
+    recognition.onresult = function(e){
+        let userText = e.results[0][0].transcript.trim().toLowerCase();
+        let standard = storySentences[currentIndex].toLowerCase();
+        let isRight = compareSentence(userText, standard);
+
+        if(isRight){
+            showSentence.className = "sentence-box correct";
+            statusText.innerText = "🎉 Excellent! You read it very well!";
+            statusText.style.color = "#239b56";
+            finishedCount++;
+            progressText.innerText = `Current Sentence: ${currentIndex+1} / ${storySentences.length} | Finished: ${finishedCount}`;
+            createStarReward();
+            createLevelReward();
+        }else{
+            showSentence.className = "sentence-box wrong";
+            statusText.innerText = "😊 Try again, listen to the reading first.";
+            statusText.style.color = "#e74c3c";
+        }
+    };
+
+    recognition.onerror = function(){
+        statusText.innerText = "Recording failed. Please check your microphone permission.";
+        statusText.style.color = "#e74c3c";
+    };
+}
+
+function compareSentence(user, standard){
+    let s1 = user.split(" ");
+    let s2 = standard.split(" ");
+    let sameWordCount = 0;
+    s1.forEach(word=>{
+        if(s2.includes(word)) sameWordCount++;
+    });
+    return sameWordCount / s2.length >= 0.6;
+}
+
+function nextSentence(){
+    if(currentIndex < storySentences.length - 1){
+        currentIndex++;
+        showCurrentSentence();
+    }else{
+        statusText.innerText = "🥳 You have read all sentences!";
+        statusText.style.color = "#9b59b6";
+    }
+}
+
+function restartAll(){
+    initPage();
+}
+
+window.onload = initPage;
+</script>
+</body>
+</html>
